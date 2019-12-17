@@ -21,7 +21,7 @@ spec:
           containerPort: 3000
         env:
           - name: MYSQL_HOST
-            value: database-service
+            value: database-service #get name from database-service.yml
           - name: MYSQL_USER
             value: root
           - name: MYSQL_PASSWORD
