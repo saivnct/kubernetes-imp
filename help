@@ -1,0 +1,147 @@
+k8s base template:
+	
+	apiVersion:
+	kind:
+	metadata:
+		name:
+		labels:
+	spec;
+
+
+
+
+pod:
+	- template:
+		apiVersion: v1
+		kind: Pod
+		metadata:
+			name: myapp-pod
+			labels:
+				app: myapp
+				type: mypod-type
+		spec;
+			containers:
+			- name: mypod-container
+			  image: xxx
+			  env:
+        		- name: MY_SECRET
+          		  value: mysecretpassword
+
+
+
+replicaset vs replication controller:
+	- replicaset has property "selector"
+	- replicaset take care of matching pods (in selector), even if they were created before.
+	- replicaset is replacement for replication controller
+	- template:
+
+		apiVersion: apps/v1
+		kind: ReplicaSet
+		metadata:
+			name: myapp-replicaset
+			labels:
+				app: myapp
+				type: myapp-type
+		spec:
+			template:
+				\\\\\\\\\\\\\\\\\\\\
+				\\POD TEMPLATE HERE\\
+				\\\\\\\\\\\\\\\\\\\\
+			replicas: n
+			selector:
+				\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+				\\matchLabels - matchExpressions      \\
+				\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+				matchLabels:
+					type: mypod-type // -> Match the labels of pod in template
+
+	
+
+deployment:
+	- deployment create replicaset -> pods
+	- features:
+		- rolling update
+		- rollback
+	- deployment strategy:
+		- Recreate
+		- Rolling update (default)
+	- arch:
+		deployment[ 
+			replicaset[ 
+				pods
+			] 
+		]
+	- template:
+
+		apiVersion: apps/v1
+		kind: Deployment
+		metadata:
+			name: myapp-deployment
+			labels:
+				app: myapp
+				type: myapp-type
+		spec:
+			template:
+				\\\\\\\\\\\\\\\\\\\\
+				\\POD TEMPLATE HERE\\
+				\\\\\\\\\\\\\\\\\\\\
+			replicas: n
+			selector:
+				\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+				\\matchLabels - matchExpressions      \\
+				\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+				matchLabels:
+					type: mypod-type // -> Match the labels of pod in template
+
+			strategy:	 \\Optional
+				type: RollingUpdate / Recreate
+				rollingUpdate:
+					maxSurge: 25%
+					maxUnavailable: 25%
+
+
+
+basic commands:
+	- help:
+		kubectl explain pod
+		kubectl explain replicaset
+		kubectl create deployment --help
+
+
+
+	kubectl create -f xxx.yml
+	kubectl replace -f xxx.yml
+
+	kubectl get all
+
+	kubectl get pods
+	kubectl delete pod myapp-pod
+	kubectl describe pod myapp-pod
+
+	kubectl get replicaset
+	kubectl describe replicaset myapp-replicaset
+	kubectl scale --replicas=6 -f xxx.yml
+	kubectl delete replicaset myapp-replicaset
+
+
+	kubectl create -f xxx.yml --record
+		=> record option instructs K8s to record the cause of change in deployment's revision
+	kubectl get deployments
+	kubectl describe deployment myapp-deployment
+	kubectl rollout status deployment/myapp-deployment
+	kubectl rollout history deployment/myapp-deployment
+		=> show revision and history of deployment
+	
+	kubectl aplpy -f xxx.yml
+		=> apply the change to deployment (docker image's version,...)
+	kubectl rollout undo deployment/myapp-deployment
+		=> rollback to previous version 
+
+
+
+
+
+
+
