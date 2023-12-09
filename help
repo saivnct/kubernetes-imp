@@ -29,6 +29,7 @@ pod:
 
 
 
+
 replicaset vs replication controller:
 	- replicaset has property "selector"
 	- replicaset take care of matching pods (in selector), even if they were created before.
@@ -56,7 +57,7 @@ replicaset vs replication controller:
 				matchLabels:
 					type: mypod-type // -> Match the labels of pod in template
 
-	
+
 
 deployment:
 	- deployment create replicaset -> pods
@@ -103,6 +104,36 @@ deployment:
 
 
 
+
+services:
+	- type:
+		- NodePort: Expose to external
+			=> Loadbalancer algorithm: Random
+		- ClusterIP (default): Intercommunicate between pods, this kind of service can be accessed by others using clusterIp or service name
+		- LoadBalancer: Expose to external + Loadbalancer (only on Cloud Provider AWS,GKC,Azure...)
+	- template:
+
+		apiVersion: v1
+		kind: Service
+		metadata:
+			name: myapp-service
+			labels:
+				app: myapp
+		spec:
+			type: NodePort\ClusterIP
+			ports:
+				- targetPort: 80 //pod's port
+				  port: 80	//service's port
+				  nodePort: 30000 //only if type=NodePort, VM port (30000-32767)
+			selector:
+				type: mypod-type // -> Match the labels of pod in template
+
+
+
+
+
+
+
 basic commands:
 	- help:
 		kubectl explain pod
@@ -139,6 +170,9 @@ basic commands:
 	kubectl rollout undo deployment/myapp-deployment
 		=> rollback to previous version 
 
+
+	kubectl get service
+	minikube service <nodeport-service-name> --url
 
 
 
