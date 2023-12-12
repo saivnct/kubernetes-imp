@@ -1,0 +1,71 @@
+Pod:
+	- template:
+		apiVersion: v1
+		kind: Pod
+		metadata:
+			name: myapp-pod
+			labels:
+				app: myapp
+				type: mypod-type
+		spec:
+			containers:
+			- name: mypod-container
+			  image: xxx
+			  env:
+        		- name: MY_SECRET
+          		  value: mysecretpassword
+          	  command: ["command", "arg1", ...]
+          	  args: ["arg1","arg2",....]
+
+basic commands:
+	kubectl run nginx --image=nginx --label="tier=web"
+	kubectl run nginx --image=nginx --label="tier=web" --port=8080
+		=> Create a new pod with name, image, labels and expose it on container port 8080.
+	kubectl create -f my-pod.yml
+
+	kubectl get all
+	kubectl get pods
+	kubectl get pods -o wide
+		=> Output with wide (additional details):
+
+	kubectl delete pod myapp-pod
+	kubectl describe pod myapp-pod         
+
+	
+	kubectl get pod <pod-name> -o yaml > pod-definition.yaml
+		=> extract pod to file
+
+	kubectl run nginx --image=nginx --dry-run=client -o yaml
+		=> create yml file but dont create/run pod (--dry-run=client)
+
+	kubectl run nginx --image=nginx --dry-run=client -o yaml > nginx-pod.yaml
+		=> create yml file but dont create/run pod (--dry-run=client) and export to a file
+
+	
+	kubectl edit pod <pod-name>
+		=> modify the properties of the pod
+		NOTE: only the properties listed below are editable
+			- spec.containers[*].image
+			- spec.initContainers[*].image
+			- spec.activeDeadlineSeconds
+			- spec.tolerations
+			- spec.terminationGracePeriodSeconds
+
+	
+	kubectl replace --force -f my-pod.yml
+		=> delete old pod, replace with the new one
+
+
+	kubectl exec <pod-name> -- <command>
+	=> exec a command on container inside pod
+		kubectl exec ubuntu-pod -- whoami
+
+
+
+
+
+
+
+
+
+

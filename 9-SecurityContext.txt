@@ -1,0 +1,39 @@
+Security context:
+	- pod level: will affect all containers in pod
+
+		apiVersion: v1
+		kind: Pod
+		metadata:
+			name: myapp-pod
+			labels:
+				app: myapp
+				type: mypod-type
+		spec:
+			securityContext:
+				runAsUser: 1000
+			containers:
+			- name: mypod-container
+			  image: xxx
+
+
+	- container level
+
+		apiVersion: v1
+		kind: Pod
+		metadata:
+			name: myapp-pod
+			labels:
+				app: myapp
+				type: mypod-type
+		spec:
+			containers:
+			- name: mypod-container
+			  image: xxx
+			  securityContext:
+				runAsUser: 1000
+				capabilities:
+					add: ["NET_ADMIN", "SYS_TIME"]
+
+
+Notes:
+	capabilities are only support at the container level!

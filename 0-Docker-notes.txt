@@ -1,0 +1,48 @@
+Docker Notes:
+
+
+ENTRYPOIT VS CMD:
+- CMD:
+	ex:
+		FROM Ubuntu
+		CMD ["sleep","5"]
+
+	docker build -t ubuntu-sleeper .
+	
+	run with built-in CMD:
+		docker run ubuntu-sleeper
+			=> container run with built-in CMD "sleep 5" 
+			=> run for 5s and stop
+	overide built-in CMD:
+		docker run ubuntu-sleeper sleep 10
+			=> container run with overide CMD "sleep 10" 
+			=> run for 10s and stop
+
+- ENTRYPOINT: use with args
+	ex:
+		FROM Ubuntu
+		ENTRYPOINT ["sleep"]
+
+	run with arg passed to ENTRYPOINT:
+		docker run ubuntu-sleeper 10
+			=> container run with arg appended to ENTRYPOINT "sleep 10" 
+	run without arg:
+		docker run ubuntu-sleeper
+			=> error
+
+- Combine CMD with ENTRYPOINT
+	ex:
+		FROM Ubuntu
+		ENTRYPOINT ["sleep"]
+		CMD ["5"]
+
+	run with arg passed to ENTRYPOINT:
+		docker run ubuntu-sleeper 10
+			=> container run with arg appended to ENTRYPOINT "sleep 10" 
+	run without arg:
+		docker run ubuntu-sleeper
+			=> container run with CMD appended to ENTRYPOINT "sleep 5" 
+
+	when we want to override ENTRYPOINT to another instruction:
+		docker run --entrypoint sleep2.0 ubuntu-sleeper 10
+			=> container run with arg appended to overrided ENTRYPOINT "sleep2.0 10"

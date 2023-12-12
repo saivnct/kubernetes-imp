@@ -1,0 +1,47 @@
+KIND 					|	Version
+Pod						|	v1
+Service 				|	v1
+ReplicationController 	|	v1
+Replicaset 				|	app/v1
+Deployment 				|	app/v1
+Namespace				|	v1
+ResourceQuota			|	v1
+ConfigMap				|	v1
+
+
+k8s base template:
+	
+	apiVersion:
+	kind:
+	metadata:
+		name:
+		labels:
+	spec;
+
+
+
+basic commands:
+	kubectl cluster-info
+	kubectl get	nodes
+	
+	kubectl get all
+		=> show all deployments, replicaset, pods, services
+
+	kubectl config current-context
+		=> get current context
+
+	- help:
+		kubectl explain pod
+		kubectl explain replicaset
+		kubectl create deployment --help
+
+
+
+
+	
+
+
+
+
+
+
