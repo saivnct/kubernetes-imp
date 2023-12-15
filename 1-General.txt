@@ -5,8 +5,9 @@ ReplicationController 	|	v1
 Replicaset 				|	app/v1
 Deployment 				|	app/v1
 Namespace				|	v1
-ResourceQuota			|	v1
 ConfigMap				|	v1
+ResourceQuota			|	v1
+LimitRange				|	v1
 
 
 k8s base template:
@@ -16,7 +17,7 @@ k8s base template:
 	metadata:
 		name:
 		labels:
-	spec;
+	spec:
 
 
 
