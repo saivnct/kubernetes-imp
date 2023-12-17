@@ -1,0 +1,28 @@
+CronJobs: The Jobs that can be scheduled
+
+- template:
+		apiVersion: batch/v1beta1
+		kind: CronJob
+		metadata:
+			name: my-cron-job
+		spec:
+			schedule: "*/1 * * * *"
+			jobTemplate:						#spec section of job
+				spec:
+					completions: 3			# default = 1
+					parallelism: 3			# default = 1
+
+					template:
+						spec:
+							containers:
+							- name: reporting-tool
+							  image: reporting-image
+				          	restartPolicy: Never
+
+
+
+
+basic commands:
+	kubectl create -f my-job.yml
+
+	kubectl get cronjob

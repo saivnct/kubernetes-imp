@@ -7,6 +7,8 @@ Pod:
 			labels:
 				app: myapp
 				type: mypod-type
+			annotations:							#optional
+				buildversion: v1
 		spec:
 			containers:
 			- name: mypod-container
@@ -16,6 +18,28 @@ Pod:
           		  value: mysecretpassword
           	  command: ["command", "arg1", ...]
           	  args: ["arg1","arg2",....]
+          	  ports:
+          	  	- containerPort: 8080
+
+
+          	restartPolicy: Always 					# default is Always => auto restart when containers dead
+
+- labels & selectors used to group and select k8s object
+	ex: 
+		kubectl get pods --selector type=mypod-type
+		=> Get pods with label "type:mypod-type"
+
+- annotations are used to record other details for information purpose
+	ex: tool's detail: name, version, build info, contact detail, phone number, email ... that maybe used for some kind of integration purpose
+
+
+- logs:
+	kubectl logs -f my-pod-name
+		=> view log stream from the pod
+
+	kubectl logs -f my-pod-name my-container-name
+		=> view log stream of my-container-name from the pod (in case pod has multi-containers inside)
+
 
 basic commands:
 	kubectl run nginx --image=nginx --label="tier=web"
@@ -23,10 +47,16 @@ basic commands:
 		=> Create a new pod with name, image, labels and expose it on container port 8080.
 	kubectl create -f my-pod.yml
 
+
 	kubectl get all
 	kubectl get pods
 	kubectl get pods -o wide
-		=> Output with wide (additional details):
+		=> Output with wide (additional details)
+	kubectl get pods --selector type=mypod-type
+		=> Get pods with label "type:mypod-type"
+
+
+
 
 	kubectl delete pod myapp-pod
 	kubectl describe pod myapp-pod         

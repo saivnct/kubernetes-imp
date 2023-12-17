@@ -1,5 +1,7 @@
 KIND 					|	Version
 Pod						|	v1
+Job						|	batch/v1
+CronJob					|	batch/v1beta1
 Service 				|	v1
 ReplicationController 	|	v1
 Replicaset 				|	app/v1
