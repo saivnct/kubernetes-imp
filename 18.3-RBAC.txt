@@ -1,5 +1,6 @@
 RBAC (role based access control) Authorization: we define roles with set of permissions and assign to user/group user
 
+- Role & Role Binding is define within namespace
 
 
 - Role:

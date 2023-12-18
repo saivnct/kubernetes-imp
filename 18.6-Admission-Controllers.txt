@@ -1,0 +1,73 @@
+Admission Controllers: used for validation requests
+	- ex:
+		- only permit images from certain registry
+		- do not permit runsAsUser: root
+		- only permit certain capabilities
+		- restrict Pod must have labels
+		- ...
+
+	- prebuilt features:
+		- AlwaysPullImages
+		- DefaultStorageClass
+		- EventRateLimit
+		- NamespaceLifecycle
+		- ...
+
+- View enabled Admission Controllers:
+	kube-apiserver -h | grep 'enable-admission-plugins'
+
+	kubectl exec -it kube-apiserver-controlplane -n kube-system -- kube-apiserver -h | grep 'enable-admission-plugins'		
+
+
+- Enable admission plugins using "--enable-admission-plugins=xxx" in Kube API server
+
+- Disable admission plugins using "--disable-admission-plugins=xxx" in Kube API server
+
+
+
+		cat /etc/kubernetes/manifest/kube-apiserver.yaml
+		nano /etc/kubernetes/manifest/kube-apiserver.yaml
+
+		grep enable-admission-plugins /etc/kubernetes/manifest/kube-apiserver.yaml
+
+
+		ex: 
+				--enable-admission-plugins=NodeRestriction, NamespaceAutoProvision
+				--disable-admission-plugins=DefaultStorageClass
+
+
+- Example:  by default, if we create a pod in namespace that's not existed => error
+	
+	kubectl run nginx --image nginx --namespace=my-namespace
+	=> Error
+
+	- we can make cluster to create namespace if not existed by enable "NamespaceAutoProvision" in admission Controllers
+
+	1. nano /etc/kubernetes/manifest/kube-apiserver.yaml
+		--enable-admission-plugins=NamespaceAutoProvision
+
+	2. wait a couples of mins for kube-apiserver to restart 
+		kubectl run nginx --image nginx --namespace=my-namespace
+
+		=> OK, my-namespace created, pod nginx created 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -15,6 +15,8 @@ Cluster Account:
 
 		=> k8s does not manage user account natively, it relies on an external source like a file with user details, cert, LDAP, ... to manage users => We cannot create users in k8s cluster
 	
+Security Flow:	
+	Kubectl -> Authentication -> Authorization -> Admission Controllers -> (Create pods, deployments, ...)
 
 
 Authentication: Who can access?
@@ -55,6 +57,41 @@ Authorization: What can they do?
 				
 				=>  when you enable multiple modes, your request is authorized using each one of mode in the order it is specified (if request is denied by 1 mod, request will be forward to next mode)
 
-					
+Admission Controllers: used for validation requests
+	- ex:
+		- only permit images from certain registry
+		- do not permit runsAsUser: root
+		- only permit certain capabilities
+		- restrict Pod must have labels
+		- ...
+
+	- prebuilt features:
+		- AlwaysPullImages
+		- DefaultStorageClass
+		- EventRateLimit
+		- NamespaceLifecycle
+		- ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
