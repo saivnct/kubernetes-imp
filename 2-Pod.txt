@@ -40,6 +40,11 @@ Pod:
 	kubectl logs -f my-pod-name my-container-name
 		=> view log stream of my-container-name from the pod (in case pod has multi-containers inside)
 
+- exec:
+	kubectl exec my-pod-name -- <command>
+	ex:
+		kubectl exec my-pod-name -- cat docs.txt
+
 
 basic commands:
 	kubectl run nginx --image=nginx --label="tier=web"
