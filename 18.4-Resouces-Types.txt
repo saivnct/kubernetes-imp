@@ -26,7 +26,7 @@ Resources are categorized into:
 	kubectl api-resources --namespaced=false
 
 
-=> to get full list resource 
+=> to get full list resources, fullname, shortname...:
 	kubectl api-resources
 
 

@@ -1,4 +1,4 @@
-Admission Controllers: used for validation requests
+Admission Controllers: used for validation requests and mutating requests
 	- ex:
 		- only permit images from certain registry
 		- do not permit runsAsUser: root
@@ -6,17 +6,35 @@ Admission Controllers: used for validation requests
 		- restrict Pod must have labels
 		- ...
 
-	- prebuilt features:
+	- there 2 type of Admission Controllers:
+		- Validating requests
+		- Mutating requests
+
+		=> the flow of admission controllers: fist Mutating and then Validating
+
+	- prebuilt Admission Controllers:
+		- DefaultStorageClass (enable by default): if request "create PVC" doesnt include StorageClass, admission controller will modify the request to add the default StorageClass that configured in cluster
+		- NamespaceLifecycle: validate if a namespace already exists and reject the request if it doesnt exist
+		- NamespaceAutoProvision
+		- NamespaceExist
 		- AlwaysPullImages
-		- DefaultStorageClass
 		- EventRateLimit
-		- NamespaceLifecycle
-		- ...
+
+	- custom Admission Controllers using WebhookServer, a WebhookServer consists 2 APIs:
+		- MutatingAdmission Webhook
+		- ValidatingAdmission Webhook
+
+
+
+		
+
 
 - View enabled Admission Controllers:
 	kube-apiserver -h | grep 'enable-admission-plugins'
 
 	kubectl exec -it kube-apiserver-controlplane -n kube-system -- kube-apiserver -h | grep 'enable-admission-plugins'		
+
+
 
 
 - Enable admission plugins using "--enable-admission-plugins=xxx" in Kube API server
@@ -25,10 +43,10 @@ Admission Controllers: used for validation requests
 
 
 
-		cat /etc/kubernetes/manifest/kube-apiserver.yaml
-		nano /etc/kubernetes/manifest/kube-apiserver.yaml
+		cat /etc/kubernetes/manifests/kube-apiserver.yaml
+		nano /etc/kubernetes/manifests/kube-apiserver.yaml
 
-		grep enable-admission-plugins /etc/kubernetes/manifest/kube-apiserver.yaml
+		grep enable-admission-plugins /etc/kubernetes/manifests/kube-apiserver.yaml
 
 
 		ex: 
@@ -47,9 +65,66 @@ Admission Controllers: used for validation requests
 		--enable-admission-plugins=NamespaceAutoProvision
 
 	2. wait a couples of mins for kube-apiserver to restart 
-		kubectl run nginx --image nginx --namespace=my-namespace
+		kubectl get pod -n kube-system
+
+	3. kubectl run nginx --image nginx --namespace=my-namespace
 
 		=> OK, my-namespace created, pod nginx created 
+
+
+
+
+- custom Admission Controllers using WebhookServer:
+	- Webhook located outside cluster:
+		apiVersion: admissionregistration.k8s.io/v1
+		kind: ValidatingWebhookConfiguration
+		metadata:
+			name: "pod-policy.example.com"
+		webhooks:
+		- name: "pod-policy.example.com"
+		  clientConfig:
+		  	url: "https://my-webhook.com"
+		  rules:
+		  	- apiGroups: [""]
+		  	  apiVersions: ["v1"]
+		  	  operations: ["CREATE"]
+		  	  resources: ["pods"]
+		  	  scope: "Namespaced"
+
+	- Webhook located inside cluster under webhook-deployment -> webhook-service
+
+
+		apiVersion: admissionregistration.k8s.io/v1
+		kind: ValidatingWebhookConfiguration
+		metadata:
+			name: "pod-policy.example.com"
+		webhooks:
+		- name: "pod-policy.example.com"
+		  clientConfig:
+		  	service:
+		  		namespace: "my-namespace"
+		  		name: "webhook-service"
+		  	caBundle: "<ca-in-base64>"		  
+		  rules:
+		  	- apiGroups: [""]
+		  	  apiVersions: ["v1"]
+		  	  operations: ["CREATE"]
+		  	  resources: ["pods"]
+		  	  scope: "Namespaced"
+
+
+	=> kubectl apply -f my-webhook-config.yaml
+
+
+
+
+
+
+
+
+
+
+
 
 
 

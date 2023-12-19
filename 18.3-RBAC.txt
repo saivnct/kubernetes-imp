@@ -48,7 +48,7 @@ RBAC (role based access control) Authorization: we define roles with set of perm
 - Role Binding: link role to user
 	- Template:
 		apiVersion: rbac.authorization.k8s.io/v1
-		kind: RoleBindind
+		kind: RoleBinding
 		metadata:
 		  name: developer-role-binding
 		subjects:

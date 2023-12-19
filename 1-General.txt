@@ -52,6 +52,13 @@ basic commands:
 		kubectl create deployment --help
 
 
+ls -la /etc/kubernetes/manifests/
+cat /etc/kubernetes/manifests/kube-apiserver.yaml
+cat /etc/kubernetes/manifests/etcd.yaml
+
+
+
+
 
 
 	

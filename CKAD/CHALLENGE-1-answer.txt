@@ -1,0 +1,223 @@
+1. Create Role
+nano developer-role.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: development
+  name: developer-role
+rules:
+- apiGroups: [""] 				
+  resources: ["services"]
+  verbs: ["*"]
+- apiGroups: [""] 				
+  resources: ["persistentvolumeclaims"]
+  verbs: ["*"]
+- apiGroups: [""] 				
+  resources: ["pods"]
+  verbs: ["*"]
+
+kubectl create -f developer-role.yaml
+kubectl get roles --namespace=development
+
+kubectl describe role developer-role --namespace=development
+
+
+--------------------------------------
+
+2. Create RoleBinding
+nano developer-role-binding.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: development
+  name: developer-rolebinding
+subjects:
+- kind: User
+  name: martin
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: developer-role
+  apiGroup: rbac.authorization.k8s.io
+
+
+kubectl create -f developer-role-binding.yaml
+kubectl apply -f developer-role-binding.yaml
+kubectl get rolebindings --namespace=development
+kubectl describe rolebinding developer-rolebinding --namespace=development
+
+
+kubectl delete rolebinding developer-rolebinding--namespace=development
+
+
+
+
+--------------------------------------
+
+
+3. Update kube-config
+#bu config
+cp /root/.kube/config /root/.kube/config.bu
+
+nano /root/.kube/config
+
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVF>
+    server: https://controlplane:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes
+- context:
+    cluster: kubernetes
+    user: martin
+  name: developer
+current-context: kubernetes-admin@kubernetes
+kind: Config
+preferences: {}
+users:
+- name: kubernetes-admin
+  user:
+    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURJVENDQWdtZ0F3SUJBZ0lJVWoyTkV5N3NLak13RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTU>
+    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBOElXL1NBUVA3OHAwMk9nWWdKR0liWGZ5c1hCMzNmcVdGK04xVzk3bUVQWU>
+- name: martin
+  user:
+    client-certificate: /root/martin.crt
+    client-key: /root/martin.key
+
+
+#view kube-config
+kubectl config view
+
+#Change security context 
+kubectl config use-context kubernetes-admin@kubernetes 
+kubectl config use-context developer
+kubectl  get pods --namespace=development
+
+
+
+--------------------------------------
+
+
+4. View jekyll-site pv  
+kubectl config use-context kubernetes-admin@kubernetes 
+kubectl get pv --namespace=development
+kubectl describe pv jekyll-site --namespace=development
+
+
+
+--------------------------------------
+
+
+
+5. Create jekyll-site pvc
+
+nano jekyll-site-pv-claim.yaml	   
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jekyll-site
+  namespace: development
+spec:
+  storageClassName: "local-storage"
+  accessModes:
+    - ReadWriteMany	  
+  resources:
+    requests:
+      storage: "1Gi" 
+
+kubectl config use-context developer 
+kubectl create -f jekyll-site-pv-claim.yaml	
+kubectl get pvc --namespace=development
+kubectl describe pvc jekyll-site --namespace=development
+kubectl delete pvc jekyll-site --namespace=development
+
+
+
+--------------------------------------
+
+
+6. Create jekyll pod
+
+nano jekyll-pod.yaml	
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: jekyll
+  namespace: development
+  labels:
+    run: jekyll
+spec:
+  containers:
+  - name: jekyll
+    image: kodekloud/jekyll-serve
+    volumeMounts:
+    - mountPath: "/site"
+      name: site
+  initContainers:
+  - name: copy-jekyll-site
+    image: kodekloud/jekyll
+    command: [ "jekyll", "new", "/site" ] 
+    volumeMounts:
+    - mountPath: "/site"
+      name: site
+  volumes:
+    - name: site
+      persistentVolumeClaim:
+        claimName: jekyll-site
+  	
+kubectl create -f jekyll-pod.yaml
+kubectl delete -f jekyll-pod.yaml
+
+kubectl  get pods --namespace=development
+kubectl  get pods --namespace=development --watch
+kubectl  describe pod jekyll --namespace=development
+
+
+
+--------------------------------------
+
+
+
+6. Create jekyll service
+
+nano jekyll-service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jekyll
+  namespace: development
+spec:
+  type: NodePort
+  ports:
+    - targetPort: 4000
+      port: 8080
+      nodePort: 30097 
+  selector:
+    run: jekyll
+
+
+kubectl create -f jekyll-service.yaml
+kubectl delete -f jekyll-service.yaml
+
+kubectl  get svc --namespace=development
+kubectl describe service jekyll-service --namespace=development
+
+kubectl delete service jekyll-service --namespace=development
+
+
+
+
+
+
+
+
