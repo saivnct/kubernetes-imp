@@ -33,6 +33,23 @@ Pod:
 	ex: tool's detail: name, version, build info, contact detail, phone number, email ... that maybe used for some kind of integration purpose
 
 
+- volume mount to an empty dir:
+	spec:
+		containers:
+		- name: mypod-container
+		  image: xxx
+    	  volumeMounts:
+    	    - name: data
+    	      mountPath: /path/to/mountpoint
+
+
+ 		#Inject all keys-values from configmap file
+		    volumes:
+		      - name: data
+		        emptyDir: {}
+
+
+
 - logs:
 	kubectl logs -f my-pod-name
 		=> view log stream from the pod
@@ -47,8 +64,8 @@ Pod:
 
 
 basic commands:
-	kubectl run nginx --image=nginx --label="tier=web"
-	kubectl run nginx --image=nginx --label="tier=web" --port=8080
+	kubectl run nginx --image=nginx --labels="tier=web"
+	kubectl run nginx --image=nginx --labels="tier=web" --port=8080
 		=> Create a new pod with name, image, labels and expose it on container port 8080.
 	kubectl create -f my-pod.yml
 

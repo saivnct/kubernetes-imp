@@ -3,6 +3,7 @@ Pod vs Jobs:
 
 - Jobs - use for kind of workload such as batch processing, computation, analytics, reporting ... that are used to carry out specific task and then finish (live for short period of time, not restart)
 	- we can make Pod to do a job by setting "restartPolicy: Never" in spec -> k8s will not auto restart pod when finishing
+
 		-> but what if we want to split the job and run in multiple pods to process jobs in parallel? We also want to make sure that all pods perform the task assigned to them successfully and then exit
 
 		=> So we need a manager that can create as many pods as we want to get a work done and ensure that the work get done successfully.
@@ -18,6 +19,8 @@ Pod vs Jobs:
 		spec:
 			completions: 3			# default = 1
 			parallelism: 3			# default = 1
+            backoffLimit: 25			# optional -> specify the number of retries before considering a Job as failed
+			activeDeadlineSeconds: 20	# optional -> Once a Job reaches activeDeadlineSeconds, all of its running Pods are terminated and the Job status will become type: Failed with reason: DeadlineExceeded
 
 			template:
 				spec:

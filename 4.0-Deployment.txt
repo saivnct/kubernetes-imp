@@ -82,6 +82,11 @@ basic commands:
 		kubectl scale --replicas=4 -f xxx.yml
 		kubectl scale deployment myapp-deployment --replicas=4
 
+	Change image:
+		kubectl set image deployment <deployment-name> <container-name>=<new-image>
+
+		ex: 
+		kubectl set image deployment nginx-deploy nginx=nginx:1.17
 
 
 

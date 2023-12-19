@@ -57,6 +57,10 @@ cat /etc/kubernetes/manifests/kube-apiserver.yaml
 cat /etc/kubernetes/manifests/etcd.yaml
 
 
+TIPs:
+	- check connection from a pod to a service:
+		kubectl exec -it <pod-name> -- sh
+		nc -v -z -w 2 <service-name> <service-port>
 
 
 

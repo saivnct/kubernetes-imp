@@ -94,7 +94,7 @@
 						path: /api/healthy
 						port: 8080
 
-	- Readiness Probes:
+	- Liveness Probes:
 		- HTTP test:
 			
 			livenessProbe:

@@ -170,7 +170,7 @@ NOTE:
 			host name www.my-domain-1.com, we create a rule with 2 path that route to 2 services
 			host name www.my-domain-2.com, we create a rule with 2 path that route to 2 services
 
-			template:
+			template 1:
 				apiVersion: networking.k8s.io/v1
 				kind: Ingress 
 				metadata:
@@ -183,21 +183,57 @@ NOTE:
 						paths:
 						- backend:
 							service:
-								name: products-service
+								name: service-1
 								port: 
 									number: 8080
 
-					- host: www.my-domain-1.com
+					- host: www.my-domain-2.com
 					  http: 
 						paths:
 						- backend:
 							service:
-								name: products-service
+								name: service-2
 								port: 
 									number: 8080
 
 			=> All traffic from these domain names will be routed to the appropriate backend irrespective of the URL Path used. 
 				You can still have multiple path specifications in each of these to handle different URL paths.
+
+
+            template 2:
+                apiVersion: networking.k8s.io/v1
+                kind: Ingress
+                metadata:
+                    name: ingress-myapp
+                    namespace: app-space
+                spec:
+                    rules:
+                    - host: www.my-domain-1.com
+                      http:
+                        paths:
+                        - pathType: Prefix
+                          path: "/abc"
+                          backend:
+                            service:
+                                name: abc-service
+                                port:
+                                    number: 8080
+
+                    - host: www.my-domain-2.com
+                      http:
+                        paths:
+                        - pathType: Prefix
+                          path: "/xyz"
+                          backend:
+                            service:
+                                name: xyz-service
+                                port:
+                                    number: 8080
+
+            =>  www.my-domain-1.com/abc will be routed to abc-service:8080
+                www.my-domain-2.com/xyz will be routed to xyz-service:8080
+
+
 
 
 		verify:

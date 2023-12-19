@@ -25,3 +25,18 @@ Node Selector:
 			nodeSelector:
 				color: Blue
 
+3. Limit the pods only run on particular nodes with matching name
+    - template
+
+        apiVersion: v1
+        kind: Pod
+        metadata:
+            name: myapp-pod
+            labels:
+                app: myapp
+                type: mypod-type
+        spec:
+            nodeName: <node-name>
+            containers:
+            - name: mypod-container
+              image: xxx
